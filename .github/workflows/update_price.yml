@@ -1,7 +1,5 @@
 name: Update Dollar Price
 on:
-  schedule:
-    - cron: "0 12,17,21 * * *"
   workflow_dispatch:
 
 jobs:
