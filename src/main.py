@@ -10,7 +10,7 @@ from fetchers.crypto import get_crypto_data, get_crypto_dominance
 from fetchers.stocks import get_stocks_data
 from fetchers.media import get_latest_news, get_latest_videos
 from analysis.tradingview import get_technical_analysis
-from discord.embed_builder import send_dashboard
+from notifier.embed_builder import send_dashboard
 
 async def main():
     print("Iniciando recopilación de datos financieros...")
