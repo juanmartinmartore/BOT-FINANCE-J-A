@@ -1,0 +1,12 @@
+target_url: "https://dolarhoy.com/"
+
+# Horarios objetivo en hora Argentina (UTC-3).
+# El cron en GitHub Actions se adelanta 15 min para compensar la demora típica del servidor.
+# Horario real del cron: 11:45 / 16:45 / 20:45 UTC → impacta ~9:00 / 14:00 / 18:00 AR.
+schedule_times:
+  - "09:00"  # Antes de que abra la rueda (abre a las 10:30)
+  - "14:00"  # Durante la rueda de mercado
+  - "18:00"  # Después de que cierra la rueda (cierra a las 17:00)
+
+# Solo días hábiles, siguiendo el calendario de la Bolsa de Comercio de Buenos Aires.
+schedule_days: "Lunes a Viernes"
