@@ -1,39 +1,68 @@
 import asyncio
 import os
-import csv
-from fetch_price import get_dollar_blue
-from notify_discord import send_discord_message
-import yaml
+import sys
 
-def get_config():
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    config_path = os.path.join(base_dir, 'src', 'config.yaml')
-    with open(config_path, 'r', encoding='utf-8') as f:
-        return yaml.safe_load(f)
+# Agregar el directorio src al path para poder importar los módulos
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-def save_to_csv(data):
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    csv_path = os.path.join(base_dir, 'data', 'dollar_history.csv')
-    
-    file_exists = os.path.isfile(csv_path)
-    with open(csv_path, 'a', newline='', encoding='utf-8') as f:
-        writer = csv.writer(f)
-        if not file_exists:
-            writer.writerow(['timestamp', 'compra', 'venta'])
-        writer.writerow([data['timestamp'], data['compra'], data['venta']])
+from fetchers.macro import get_dolares, get_dolar_futuro, get_inflacion, get_bcra_variables
+from fetchers.crypto import get_crypto_data, get_crypto_dominance
+from fetchers.stocks import get_stocks_data
+from fetchers.media import get_latest_news, get_latest_videos
+from analysis.tradingview import get_technical_analysis
+from notifier.embed_builder import send_dashboard, AR_TZ
+from datetime import datetime
 
 async def main():
-    print("Obteniendo cotización de Dólar Blue...")
-    data = await get_dollar_blue()
+    print("Iniciando recopilación de datos financieros...")
     
-    if data:
-        print(f"Cotización obtenida: Compra ${data['compra']} | Venta ${data['venta']}")
-        save_to_csv(data)
-        
-        print("Enviando notificación a Discord...")
-        await send_discord_message(data)
+    # 1. Fetch de Medios (Noticias y YouTube)
+    print("Obteniendo noticias y videos...")
+    news = get_latest_news()
+    videos = get_latest_videos()
+    
+    # 2. Fetch de Datos Macro
+    print("Obteniendo datos macroeconómicos y BCRA...")
+    dolares = get_dolares()
+    futuro = get_dolar_futuro()
+    inflacion = get_inflacion()
+    bcra = get_bcra_variables()
+    
+    # 3. Fetch de Mercados Tradicionales
+    print("Obteniendo datos de mercados tradicionales...")
+    stocks = get_stocks_data()
+    
+    # 4. Fetch de Criptomonedas
+    print("Obteniendo datos cripto...")
+    crypto = get_crypto_data()
+    dominance = get_crypto_dominance()
+    
+    # 5. Fetch de Análisis Técnico (TradingView)
+    print("Obteniendo análisis técnico...")
+    ta = get_technical_analysis()
+    
+    # 6. Enviar a Discord
+    print("Enviando reporte a Discord...")
+    hora_actual = datetime.now(AR_TZ).hour
+    
+    success = await send_dashboard(
+        news=news, 
+        videos=videos, 
+        dolares=dolares, 
+        futuro=futuro, 
+        inflacion=inflacion, 
+        bcra=bcra,
+        stocks=stocks, 
+        crypto=crypto, 
+        dominance=dominance, 
+        ta=ta,
+        hora_actual=hora_actual
+    )
+    
+    if success:
+        print("Flujo completado exitosamente.")
     else:
-        print("No se pudo obtener la cotización. Revisar la lógica de scraping.")
+        print("Hubo un error al enviar el reporte a Discord.")
 
 if __name__ == "__main__":
     asyncio.run(main())
