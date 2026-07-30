@@ -42,23 +42,22 @@ def get_latest_news():
     except Exception as e:
         print(f"Error Forbes Finanzas: {e}")
 
-    # 3. DolarHoy Cripto (Scraping)
+# 3. DolarHoy Cripto (Scraping)
     try:
         url = "https://dolarhoy.com/"
         resp = requests.get(url, headers=headers, timeout=10)
         if resp.status_code == 200:
             soup = BeautifulSoup(resp.text, 'html.parser')
-            # Extraer cualquier enlace con clase title o dentro de h4/h3
-            articulo = soup.find('a', class_='title')
-            if not articulo:
-                # Fallback: buscar el primer enlace largo en un h4 o titular principal
-                h4 = soup.find('h4')
-                if h4 and h4.find('a'):
-                    articulo = h4.find('a')
-            if articulo:
-                titulo = articulo.text.strip()
-                link = "https://dolarhoy.com" + articulo['href'] if not articulo['href'].startswith('http') else articulo['href']
-                resultados.append(f"📰 **DólarHoy:** [{titulo}]({link})")
+            # DolarHoy suele poner las noticias en bloques con clase 'topic' o directamente en hipervínculos dentro de 'div'
+            noticia_encontrada = False
+            for enlace in soup.find_all('a', href=True):
+                # Buscamos un enlace que parezca una noticia (más de 20 caracteres y sin estar en el header)
+                if '/noticias/' in enlace['href'] or len(enlace.text.strip()) > 30:
+                    titulo = enlace.text.strip()
+                    link = "https://dolarhoy.com" + enlace['href'] if not enlace['href'].startswith('http') else enlace['href']
+                    resultados.append(f"📰 **DólarHoy:** [{titulo}]({link})")
+                    noticia_encontrada = True
+                    break
     except Exception as e:
         print(f"Error DolarHoy: {e}")
 
@@ -68,13 +67,18 @@ def get_latest_news():
         resp = requests.get(url, headers=headers, timeout=10)
         if resp.status_code == 200:
             soup = BeautifulSoup(resp.text, 'html.parser')
-            # Las notas principales suelen estar en a.story-card-info-title o similar, buscamos h2
-            titulos = soup.find_all(['h2', 'h1'])
-            for h in titulos:
-                a_tag = h.find('a')
-                if a_tag and a_tag.get('href'):
-                    titulo = a_tag.text.strip()
-                    if len(titulo) > 20: # Evitar links vacíos o de menú
+            # Infobae cambió sus clases dinámicas. Buscamos el primer link dentro de la estructura principal de la nota
+            titulos = soup.find_all(['h2', 'a'])
+            for elemento in titulos:
+                if elemento.name == 'a' and elemento.get('href') and len(elemento.text.strip()) > 35:
+                    titulo = elemento.text.strip()
+                    link = "https://www.infobae.com" + elemento['href'] if not elemento['href'].startswith('http') else elemento['href']
+                    resultados.append(f"📰 **Infobae:** [{titulo}]({link})")
+                    break
+                elif elemento.name == 'h2':
+                    a_tag = elemento.find('a')
+                    if a_tag and a_tag.get('href') and len(a_tag.text.strip()) > 35:
+                        titulo = a_tag.text.strip()
                         link = "https://www.infobae.com" + a_tag['href'] if not a_tag['href'].startswith('http') else a_tag['href']
                         resultados.append(f"📰 **Infobae:** [{titulo}]({link})")
                         break
