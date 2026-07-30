@@ -100,31 +100,35 @@ def get_bcra_variables():
 
 def get_inflacion():
     """Obtiene el último dato de inflación IPC publicado."""
-    # Intento 1: API de Series de Tiempo del Gobierno Argentino
     try:
         url = "https://apis.datos.gob.ar/series/api/series/"
         params = {
             "ids": "148.3_INIVELGENERAL_DICI_M_26",
-            "last": "1",
+            "last": "3", # Pedimos los últimos 3 meses por las dudas
             "format": "json"
         }
         headers = {"User-Agent": "Mozilla/5.0"}
         resp = requests.get(url, headers=headers, params=params, timeout=15)
+        
         if resp.status_code == 200:
             data = resp.json()
             datos = data.get("data", [])
-            if datos and len(datos[-1]) >= 2 and datos[-1][1] is not None:
-                fecha_raw = datos[-1][0]  # Formato: "2026-06-01"
-                valor = round(datos[-1][1], 2)
-                # Convertir fecha a formato legible
-                try:
-                    fecha_dt = datetime.strptime(fecha_raw, "%Y-%m-%d")
-                    meses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun",
-                             "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]
-                    fecha_str = f"{meses[fecha_dt.month - 1]} {fecha_dt.year}"
-                except Exception:
-                    fecha_str = fecha_raw
-                return {"valor": valor, "fecha": fecha_str}
+            
+            # Recorremos la lista al revés (desde el más reciente al más antiguo)
+            for fila in reversed(datos):
+                if len(fila) >= 2 and fila[1] is not None:
+                    fecha_raw = fila[0]
+                    valor = round(fila[1], 2)
+                    
+                    try:
+                        fecha_dt = datetime.strptime(fecha_raw, "%Y-%m-%d")
+                        meses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun",
+                                 "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]
+                        fecha_str = f"{meses[fecha_dt.month - 1]} {fecha_dt.year}"
+                    except Exception:
+                        fecha_str = fecha_raw
+                        
+                    return {"valor": valor, "fecha": fecha_str}
     except Exception as e:
         print(f"Error fetching inflacion (datos.gob.ar): {e}")
 
