@@ -44,15 +44,17 @@ def get_latest_news():
 
     # 3. DolarHoy Cripto (Scraping)
     try:
-        # DolarHoy no tiene sección estricta de cripto noticias, buscaremos en su portada 
-        # o sección noticias la palabra cripto/bitcoin si es posible. Por simplicidad sacaremos 
-        # la primera noticia principal si no encontramos algo especifico
         url = "https://dolarhoy.com/"
         resp = requests.get(url, headers=headers, timeout=10)
         if resp.status_code == 200:
             soup = BeautifulSoup(resp.text, 'html.parser')
-            # Extraer primer título (ajustar clase según inspección)
+            # Extraer cualquier enlace con clase title o dentro de h4/h3
             articulo = soup.find('a', class_='title')
+            if not articulo:
+                # Fallback: buscar el primer enlace largo en un h4 o titular principal
+                h4 = soup.find('h4')
+                if h4 and h4.find('a'):
+                    articulo = h4.find('a')
             if articulo:
                 titulo = articulo.text.strip()
                 link = "https://dolarhoy.com" + articulo['href'] if not articulo['href'].startswith('http') else articulo['href']
@@ -67,15 +69,15 @@ def get_latest_news():
         if resp.status_code == 200:
             soup = BeautifulSoup(resp.text, 'html.parser')
             # Las notas principales suelen estar en a.story-card-info-title o similar, buscamos h2
-            articulo = soup.find('h2')
-            if articulo and articulo.parent and articulo.parent.name == 'a':
-                titulo = articulo.text.strip()
-                link = "https://www.infobae.com" + articulo.parent['href'] if not articulo.parent['href'].startswith('http') else articulo.parent['href']
-                resultados.append(f"📰 **Infobae:** [{titulo}]({link})")
-            elif articulo and articulo.find('a'):
-                titulo = articulo.find('a').text.strip()
-                link = "https://www.infobae.com" + articulo.find('a')['href'] if not articulo.find('a')['href'].startswith('http') else articulo.find('a')['href']
-                resultados.append(f"📰 **Infobae:** [{titulo}]({link})")
+            titulos = soup.find_all(['h2', 'h1'])
+            for h in titulos:
+                a_tag = h.find('a')
+                if a_tag and a_tag.get('href'):
+                    titulo = a_tag.text.strip()
+                    if len(titulo) > 20: # Evitar links vacíos o de menú
+                        link = "https://www.infobae.com" + a_tag['href'] if not a_tag['href'].startswith('http') else a_tag['href']
+                        resultados.append(f"📰 **Infobae:** [{titulo}]({link})")
+                        break
     except Exception as e:
         print(f"Error Infobae: {e}")
 

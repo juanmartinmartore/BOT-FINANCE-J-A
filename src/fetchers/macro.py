@@ -71,7 +71,8 @@ def get_bcra_variables():
     variables = {}
     try:
         url = "https://api.bcra.gob.ar/estadisticas/v1/principalesvariables"
-        resp = requests.get(url, verify=False, timeout=15)
+        headers = {"User-Agent": "Mozilla/5.0"}
+        resp = requests.get(url, headers=headers, verify=False, timeout=15)
         if resp.status_code == 200:
             data = resp.json()
             resultados = data.get("results", [])
@@ -107,7 +108,8 @@ def get_inflacion():
             "last": "1",
             "format": "json"
         }
-        resp = requests.get(url, params=params, timeout=15)
+        headers = {"User-Agent": "Mozilla/5.0"}
+        resp = requests.get(url, headers=headers, params=params, timeout=15)
         if resp.status_code == 200:
             data = resp.json()
             datos = data.get("data", [])
@@ -129,13 +131,14 @@ def get_inflacion():
     # Intento 2: BCRA API - buscar cualquier variable con "inflación" en la descripción
     try:
         url = "https://api.bcra.gob.ar/estadisticas/v1/principalesvariables"
-        resp = requests.get(url, verify=False, timeout=15)
+        headers = {"User-Agent": "Mozilla/5.0"}
+        resp = requests.get(url, headers=headers, verify=False, timeout=15)
         if resp.status_code == 200:
             data = resp.json()
             resultados = data.get("results", [])
             for res in resultados:
                 desc = res.get("descripcion", "").lower()
-                if "inflación mensual" in desc or "ipc" in desc:
+                if "inflacion" in desc or "inflación" in desc or "ipc" in desc:
                     valor = res.get("valor", 0)
                     fecha = res.get("fecha", "")
                     return {"valor": valor, "fecha": fecha}
