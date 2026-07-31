@@ -79,9 +79,8 @@ async def send_dashboard(news, videos, dolares, futuro, inflacion, bcra, stocks,
     desc_macro += f"**Dólar Oficial:** Compra ${compra_ofi} | Venta ${venta_ofi}\n"
     desc_macro += f"**Dólar CCL:** Venta ${venta_ccl}\n"
     
-    # Mostrar dólar futuro SOLO a las 18hs (cierre)
-    if hora_actual >= 17:
-        desc_macro += f"**Dólar Futuro (Cierre):** {futuro}\n"
+    # Mostrar dólar futuro siempre, incluso si el job se ejecuta fuera del horario de cierre.
+    desc_macro += f"**Dólar Futuro (Cierre):** {futuro}\n"
 
     desc_macro += "\n─────────────\n"
     
