@@ -1,11 +1,10 @@
 import yfinance as yf
-
+import requests
 
 def _calculate_change_pct(today_price, yesterday_price):
     if not yesterday_price:
         return 0.0
     return round(((today_price - yesterday_price) / yesterday_price) * 100, 2)
-
 
 def get_stocks_data():
     """Obtiene precios y variación diaria de índices y acciones clave."""
@@ -16,15 +15,20 @@ def get_stocks_data():
         "YPF": "YPF"
     }
 
+    # Creamos una sesión falsa para evitar el bloqueo de Yahoo Finance
+    session = requests.Session()
+    session.headers.update({
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    })
+
     resultados = {}
 
     for ticker, name in tickers_dict.items():
         try:
-            stock = yf.Ticker(ticker)
-            hist = stock.history(period="7d", auto_adjust=False, actions=False)
-
-            if hist.empty:
-                hist = stock.history(period="2d", interval="1d", auto_adjust=False, actions=False)
+            # Pasamos la sesión al Ticker
+            stock = yf.Ticker(ticker, session=session)
+            # Simplificamos la llamada para evitar problemas de parámetros obsoletos
+            hist = stock.history(period="5d")
 
             if not hist.empty:
                 closes = hist["Close"].dropna()
@@ -41,16 +45,9 @@ def get_stocks_data():
                         "change_pct": 0.0
                     }
             else:
-                fast_info = getattr(stock, "fast_info", None)
-                if fast_info is not None:
-                    last_price = getattr(fast_info, "last_price", None)
-                    previous_close = getattr(fast_info, "previous_close", None)
-                    if last_price is not None:
-                        resultados[name] = {
-                            "price": round(float(last_price), 2),
-                            "change_pct": _calculate_change_pct(float(last_price), float(previous_close or last_price))
-                        }
+                print(f"⚠️ Yahoo devolvió datos vacíos para {name}")
+                
         except Exception as inner_e:
-            print(f"Error procesando {name}: {inner_e}")
+            print(f"🚨 Error de red procesando {name}: {inner_e}")
 
     return resultados
