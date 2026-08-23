@@ -75,22 +75,28 @@ async def send_dashboard(news, videos, dolares, futuro, inflacion, bcra, stocks,
     venta_ofi = fmt_ar(dolares.get('Oficial', {}).get('venta', 0), 2)
     venta_ccl = fmt_ar(dolares.get('CCL', {}).get('venta', 0), 2)
 
-    desc_macro = f"**Dólar Blue:** Compra ${compra_blue} | Venta ${venta_blue}\n"
-    desc_macro += f"**Dólar Oficial:** Compra ${compra_ofi} | Venta ${venta_ofi}\n"
-    desc_macro += f"**Dólar CCL:** Venta ${venta_ccl}\n"
+    desc_macro = f"💵 **Dólar Blue:**\n> Compra `${compra_blue}` | Venta `${venta_blue}`\n\n"
+    desc_macro += f"🏦 **Dólar Oficial:**\n> Compra `${compra_ofi}` | Venta `${venta_ofi}`\n\n"
+    desc_macro += f"🏛️ **Dólar CCL:**\n> Venta `${venta_ccl}`\n\n"
     
-    # Mostrar dólar futuro siempre, incluso si el job se ejecuta fuera del horario de cierre.
-    desc_macro += f"**Dólar Futuro (Cierre):** {futuro}\n"
+    # Mostrar dólar futuro apilado verticalmente
+    desc_macro += f"📅 **Dólar Futuro (Cierre):**\n"
+    if futuro:
+        # Reemplazamos el " | " original por un salto de línea y un blockquote
+        futuro_formateado = futuro.replace(" | ", "\n> ")
+        desc_macro += f"> {futuro_formateado}\n"
+    else:
+        desc_macro += "> No disponible\n"
 
     desc_macro += "\n─────────────\n"
     
     if inflacion:
         inflacion_val = fmt_ar(inflacion.get('valor', 0), 1)
         fecha_inf = inflacion.get('fecha', '')
-        desc_macro += f"**Inflación IPC:** {inflacion_val}% ({fecha_inf})\n"
-        desc_macro += f"*(Próximo dato estimado: ~{_get_next_inflation_date()})*"
+        desc_macro += f"🛒 **Inflación IPC:** `{inflacion_val}%` ({fecha_inf})\n"
+        desc_macro += f"> *(Próximo dato estimado: ~{_get_next_inflation_date()})*"
     else:
-        desc_macro += "**Inflación IPC:** Dato demorado"
+        desc_macro += "🛒 **Inflación IPC:** Dato demorado"
         
     embeds.append({
         "title": "🇦🇷 Termómetro Argentino",
@@ -99,7 +105,7 @@ async def send_dashboard(news, videos, dolares, futuro, inflacion, bcra, stocks,
     })
     
     # Embed 4: Mercados Tradicionales
-    desc_stocks = ""
+    desc_stocks = "*(TA basado en 26 indicadores de TradingView: Osciladores y Medias Móviles)*\n\n"
     for name, data in stocks.items():
         emoji = "🟢" if data['change_pct'] >= 0 else "🔴"
         change_str = fmt_ar(data['change_pct'], 2)
@@ -107,25 +113,28 @@ async def send_dashboard(news, videos, dolares, futuro, inflacion, bcra, stocks,
         signo = "+" if data['change_pct'] > 0 else ""
         ta_data = ta.get(name)
 
-        desc_stocks += f"**{name}:** ${price_str} ({signo}{change_str}%) {emoji}"
+        desc_stocks += f"📈 **{name}**\n"
+        desc_stocks += f"> 💵 Precio: `${price_str}` ({signo}{change_str}%) {emoji}\n"
         if ta_data:
             rec = ta_data['recomendacion']
             buy, neutral, sell = ta_data['buy'], ta_data['neutral'], ta_data['sell']
-            desc_stocks += f" | Análisis Técnico: {rec} ({buy}↑ {neutral}↔ {sell}↓)"
+            desc_stocks += f"> 📊 Análisis T.: **{rec}** ({buy}↑ {neutral}↔ {sell}↓)\n"
         desc_stocks += "\n"
         
-    if not desc_stocks: desc_stocks = "Datos no disponibles."
+    if desc_stocks == "*(TA basado en 26 indicadores de TradingView: Osciladores y Medias Móviles)*\n\n":
+        desc_stocks = "Datos no disponibles."
         
     embeds.append({
         "title": "📈 Mercados Tradicionales",
-        "description": desc_stocks,
+        "description": desc_stocks.strip(),
         "color": 15105570 # Orange
     })
     
     # Embed 5: Cripto y Dominancia
     dom_btc = fmt_ar(dominance.get('BTC', 0), 2)
     dom_eth = fmt_ar(dominance.get('ETH', 0), 2)
-    desc_crypto = f"**Dominancia:** BTC {dom_btc}% | ETH {dom_eth}%\n─────────────\n"
+    desc_crypto = f"**Dominancia:** BTC {dom_btc}% | ETH {dom_eth}%\n"
+    desc_crypto += "*(TA basado en 26 indicadores de TradingView: Osciladores y Medias Móviles)*\n─────────────\n\n"
     
     for name, data in crypto.items():
         emoji = "🟢" if data['change_24h'] >= 0 else "🔴"
@@ -139,11 +148,12 @@ async def send_dashboard(news, videos, dolares, futuro, inflacion, bcra, stocks,
             price_str = fmt_ar(data['price'], 2)
 
         ta_data = ta.get(name)
-        desc_crypto += f"**{name}:** ${price_str} ({signo}{change_str}%) {emoji}"
+        desc_crypto += f"🪙 **{name}**\n"
+        desc_crypto += f"> 💵 Precio: `${price_str}` ({signo}{change_str}%) {emoji}\n"
         if ta_data:
             rec = ta_data['recomendacion']
             buy, neutral, sell = ta_data['buy'], ta_data['neutral'], ta_data['sell']
-            desc_crypto += f" | Análisis Técnico: {rec} ({buy}↑ {neutral}↔ {sell}↓)"
+            desc_crypto += f"> 📊 Análisis T.: **{rec}** ({buy}↑ {neutral}↔ {sell}↓)\n"
         desc_crypto += "\n"
         
     # Agregamos timestamp al último embed para referencia
