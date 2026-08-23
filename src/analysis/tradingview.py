@@ -9,15 +9,18 @@ def get_technical_analysis():
     
     activos = {
         # Mercados tradicionales — key debe coincidir con stocks.py
-        "S&P 500": {"symbol": "SPX",    "screener": "america", "exchange": "SP"},
-        "Nasdaq":  {"symbol": "NDX",    "screener": "america", "exchange": "NASDAQ"},
-        "Nvidia":  {"symbol": "NVDA",   "screener": "america", "exchange": "NASDAQ"},
-        "YPF":     {"symbol": "YPF",    "screener": "america", "exchange": "NYSE"},
-        "Mercado Libre": {"symbol": "MELI", "screener": "america", "exchange": "NASDAQ"},
-        "SpaceX":  {"symbol": "SPCX",   "screener": "america", "exchange": "NASDAQ"},
-        "Aluar":   {"symbol": "ALUA",   "screener": "argentina", "exchange": "BCBA"},
-        "BYMA":    {"symbol": "BYMA",   "screener": "argentina", "exchange": "BCBA"},
-        "Pampa Energía": {"symbol": "PAMP", "screener": "america", "exchange": "NYSE"},
+        # Índices y acciones de EE.UU.
+        "Nasdaq":        {"symbol": "NDX",    "screener": "america",   "exchange": "NASDAQ"},
+        "S&P 500":       {"symbol": "SPX",    "screener": "america",   "exchange": "SP"},
+        "Nvidia":        {"symbol": "NVDA",   "screener": "america",   "exchange": "NASDAQ"},
+        "YPF":           {"symbol": "YPF",    "screener": "america",   "exchange": "NYSE"},
+        "SpaceX":        {"symbol": "SPCX",   "screener": "america",   "exchange": "NASDAQ"},
+        # Brasil/NASDAQ
+        "Mercado Libre": {"symbol": "MELI",   "screener": "america",   "exchange": "NASDAQ"},
+        # Argentina
+        "Aluar":         {"symbol": "ALUA",   "screener": "argentina", "exchange": "BCBA"},
+        "BYMA":          {"symbol": "BYMA",   "screener": "argentina", "exchange": "BCBA"},
+        "Pampa Energía": {"symbol": "PAMP",   "screener": "america",   "exchange": "NYSE"},
         # Cripto — key debe coincidir con crypto.py (símbolos cortos)
         "BTC":     {"symbol": "BTCUSD",  "screener": "crypto", "exchange": "BINANCE"},
         "ETH":     {"symbol": "ETHUSD",  "screener": "crypto", "exchange": "BINANCE"},
