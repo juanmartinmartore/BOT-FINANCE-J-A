@@ -13,6 +13,11 @@ def get_technical_analysis():
         "Nasdaq":  {"symbol": "NDX",    "screener": "america", "exchange": "NASDAQ"},
         "Nvidia":  {"symbol": "NVDA",   "screener": "america", "exchange": "NASDAQ"},
         "YPF":     {"symbol": "YPF",    "screener": "america", "exchange": "NYSE"},
+        "Mercado Libre": {"symbol": "MELI", "screener": "america", "exchange": "NASDAQ"},
+        "SpaceX":  {"symbol": "SPCX",   "screener": "america", "exchange": "NASDAQ"},
+        "Aluar":   {"symbol": "ALUA",   "screener": "argentina", "exchange": "BCBA"},
+        "BYMA":    {"symbol": "BYMA",   "screener": "argentina", "exchange": "BCBA"},
+        "Pampa Energía": {"symbol": "PAMP", "screener": "america", "exchange": "NYSE"},
         # Cripto — key debe coincidir con crypto.py (símbolos cortos)
         "BTC":     {"symbol": "BTCUSD",  "screener": "crypto", "exchange": "BINANCE"},
         "ETH":     {"symbol": "ETHUSD",  "screener": "crypto", "exchange": "BINANCE"},
