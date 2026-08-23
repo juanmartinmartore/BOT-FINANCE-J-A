@@ -150,6 +150,7 @@ def get_latest_videos(history_manager=None):
     """Obtiene los últimos videos de canales de YouTube clave vía RSS, filtrando Shorts."""
     canales_yt = {
         "Joven Inversor": "UCnOWLhk15P-gUV7RdehAI2Q",
+        "Cripto Norber": "UCNa-pOxhhp3hWfAGuTnWhCg",
         "Lubruuu": "UC76wQE_p3uZ5gDUQILhwIlg",
         "Bull Market": "UCXgsCoIhEUIwWvGK_JDY21w",
         "Inverarg": "UCzjPGrukIV5DDkLDQTKgmgA"
