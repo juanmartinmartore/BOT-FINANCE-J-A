@@ -8,7 +8,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from fetchers.macro import get_dolares, get_dolar_futuro, get_inflacion, get_bcra_variables
 from fetchers.crypto import get_crypto_data, get_crypto_dominance
 from fetchers.stocks import get_stocks_data
-from fetchers.media import get_latest_news, get_latest_videos
+from fetchers.media import get_latest_news, get_latest_videos, HistoryManager
 from analysis.tradingview import get_technical_analysis
 from notifier.embed_builder import send_dashboard, AR_TZ
 from datetime import datetime
@@ -16,10 +16,13 @@ from datetime import datetime
 async def main():
     print("Iniciando recopilación de datos financieros...")
     
+    # Instanciamos el historial para evitar noticias repetidas
+    history = HistoryManager()
+    
     # 1. Fetch de Medios (Noticias y YouTube)
     print("Obteniendo noticias y videos...")
-    news = get_latest_news()
-    videos = get_latest_videos()
+    news = get_latest_news(history_manager=history)
+    videos = get_latest_videos(history_manager=history)
     
     # 2. Fetch de Datos Macro
     print("Obteniendo datos macroeconómicos y BCRA...")
