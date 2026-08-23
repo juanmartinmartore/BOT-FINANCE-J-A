@@ -69,16 +69,21 @@ def _get_from_yfinance(ticker):
 
 def get_stocks_data():
     """Obtiene precios y variación diaria de índices y acciones clave."""
-    tickers_dict = {
-        "^GSPC": "S&P 500",
-        "^IXIC": "Nasdaq",
-        "NVDA": "Nvidia",
-        "YPF": "YPF"
+    tickers = {
+        "S&P 500": "^GSPC",
+        "Nasdaq": "^IXIC",
+        "Nvidia": "NVDA",
+        "YPF": "YPF",
+        "Mercado Libre": "MELI",
+        "SpaceX": "SPCX",
+        "Aluar": "ALUA.BA",
+        "BYMA": "BYMA.BA",
+        "Pampa Energía": "PAMP"
     }
 
     resultados = {}
 
-    for ticker, name in tickers_dict.items():
+    for name, ticker in tickers.items():
         # Intento 1: API directa de Yahoo Finance (más confiable)
         data = _get_from_yahoo_direct(ticker)
 
