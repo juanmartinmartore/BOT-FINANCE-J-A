@@ -104,6 +104,9 @@ async def send_dashboard(news, videos, dolares, futuro, inflacion, bcra, stocks,
         "color": 3447003 # Blue
     })
     
+    # Acciones que cotizan en ARS (bolsa argentina)
+    ARS_STOCKS = {"Aluar", "BYMA"}
+
     # Embed 4: Mercados Tradicionales
     desc_stocks = "*(TA basado en 26 indicadores de TradingView: Osciladores y Medias Móviles)*\n\n"
     for name, data in stocks.items():
@@ -111,10 +114,11 @@ async def send_dashboard(news, videos, dolares, futuro, inflacion, bcra, stocks,
         change_str = fmt_ar(data['change_pct'], 2)
         price_str = fmt_ar(data['price'], 2)
         signo = "+" if data['change_pct'] > 0 else ""
+        moneda = "ARS" if name in ARS_STOCKS else "USD"
         ta_data = ta.get(name)
 
         desc_stocks += f"📈 **{name}**\n"
-        desc_stocks += f"> 💵 Precio: `${price_str}` ({signo}{change_str}%) {emoji}\n"
+        desc_stocks += f"> 💵 Precio: `${price_str} {moneda}` ({signo}{change_str}%) {emoji}\n"
         if ta_data:
             rec = ta_data['recomendacion']
             buy, neutral, sell = ta_data['buy'], ta_data['neutral'], ta_data['sell']
@@ -131,10 +135,20 @@ async def send_dashboard(news, videos, dolares, futuro, inflacion, bcra, stocks,
     })
     
     # Embed 5: Cripto y Dominancia
-    dom_btc = fmt_ar(dominance.get('BTC', 0), 2)
-    dom_eth = fmt_ar(dominance.get('ETH', 0), 2)
-    desc_crypto = f"**Dominancia:** BTC {dom_btc}% | ETH {dom_eth}%\n"
-    desc_crypto += "*(TA basado en 26 indicadores de TradingView: Osciladores y Medias Móviles)*\n─────────────\n\n"
+    btc_dom = dominance.get('BTC', 0)
+    eth_dom = dominance.get('ETH', 0)
+    resto_dom = max(0, 100 - btc_dom - eth_dom)
+    dom_btc_str = fmt_ar(btc_dom, 2)
+    dom_eth_str = fmt_ar(eth_dom, 2)
+    dom_resto_str = fmt_ar(resto_dom, 2)
+
+    # Dominancia separada del aviso TA
+    desc_crypto  = f"📊 **Dominancia del mercado:**\n"
+    desc_crypto += f"> 🟡 BTC: `{dom_btc_str}%`\n"
+    desc_crypto += f"> 🔵 ETH: `{dom_eth_str}%`\n"
+    desc_crypto += f"> 🔷 Resto de altcoins: `{dom_resto_str}%`\n"
+    desc_crypto += "\n─────────────\n"
+    desc_crypto += "*(TA basado en 26 indicadores de TradingView: Osciladores y Medias Móviles)*\n\n"
     
     for name, data in crypto.items():
         emoji = "🟢" if data['change_24h'] >= 0 else "🔴"
@@ -149,7 +163,7 @@ async def send_dashboard(news, videos, dolares, futuro, inflacion, bcra, stocks,
 
         ta_data = ta.get(name)
         desc_crypto += f"🪙 **{name}**\n"
-        desc_crypto += f"> 💵 Precio: `${price_str}` ({signo}{change_str}%) {emoji}\n"
+        desc_crypto += f"> 💵 Precio: `${price_str} USDT` ({signo}{change_str}%) {emoji}\n"
         if ta_data:
             rec = ta_data['recomendacion']
             buy, neutral, sell = ta_data['buy'], ta_data['neutral'], ta_data['sell']
