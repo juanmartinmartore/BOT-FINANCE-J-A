@@ -105,11 +105,13 @@ async def send_dashboard(news, videos, dolares, futuro, inflacion, bcra, stocks,
         change_str = fmt_ar(data['change_pct'], 2)
         price_str = fmt_ar(data['price'], 2)
         signo = "+" if data['change_pct'] > 0 else ""
-        ta_status = ta.get(name, "")
-        
+        ta_data = ta.get(name)
+
         desc_stocks += f"**{name}:** ${price_str} ({signo}{change_str}%) {emoji}"
-        if ta_status:
-             desc_stocks += f" | TA: {ta_status}"
+        if ta_data:
+            rec = ta_data['recomendacion']
+            buy, neutral, sell = ta_data['buy'], ta_data['neutral'], ta_data['sell']
+            desc_stocks += f" | Análisis Técnico: {rec} ({buy}↑ {neutral}↔ {sell}↓)"
         desc_stocks += "\n"
         
     if not desc_stocks: desc_stocks = "Datos no disponibles."
@@ -129,17 +131,19 @@ async def send_dashboard(news, videos, dolares, futuro, inflacion, bcra, stocks,
         emoji = "🟢" if data['change_24h'] >= 0 else "🔴"
         signo = "+" if data['change_24h'] > 0 else ""
         change_str = fmt_ar(data['change_24h'], 2)
-        
+
         # Criptos grandes sin decimales, altcoins con decimales
         if data['price'] > 1000:
             price_str = fmt_ar(data['price'], 0)
         else:
             price_str = fmt_ar(data['price'], 2)
-            
-        ta_status = ta.get(name, "")
+
+        ta_data = ta.get(name)
         desc_crypto += f"**{name}:** ${price_str} ({signo}{change_str}%) {emoji}"
-        if ta_status:
-            desc_crypto += f" | TA: {ta_status}"
+        if ta_data:
+            rec = ta_data['recomendacion']
+            buy, neutral, sell = ta_data['buy'], ta_data['neutral'], ta_data['sell']
+            desc_crypto += f" | Análisis Técnico: {rec} ({buy}↑ {neutral}↔ {sell}↓)"
         desc_crypto += "\n"
         
     # Agregamos timestamp al último embed para referencia
