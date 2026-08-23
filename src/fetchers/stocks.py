@@ -70,15 +70,18 @@ def _get_from_yfinance(ticker):
 def get_stocks_data():
     """Obtiene precios y variación diaria de índices y acciones clave."""
     tickers = {
-        "S&P 500": "^GSPC",
-        "Nasdaq": "^IXIC",
-        "Nvidia": "NVDA",
-        "YPF": "YPF",
+        # Índices y acciones de EE.UU.
+        "Nasdaq":        "^IXIC",
+        "S&P 500":       "^GSPC",
+        "Nvidia":        "NVDA",
+        "YPF":           "YPF",
+        "SpaceX":        "SPCX",
+        # Brasil/NASDAQ
         "Mercado Libre": "MELI",
-        "SpaceX": "SPCX",
-        "Aluar": "ALUA.BA",
-        "BYMA": "BYMA.BA",
-        "Pampa Energía": "PAMP"
+        # Argentina
+        "Aluar":         "ALUA.BA",
+        "BYMA":          "BYMA.BA",
+        "Pampa Energía": "PAMP",
     }
 
     resultados = {}
