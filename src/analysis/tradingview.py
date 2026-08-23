@@ -14,8 +14,12 @@ def get_technical_analysis():
         "Nvidia":  {"symbol": "NVDA",   "screener": "america", "exchange": "NASDAQ"},
         "YPF":     {"symbol": "YPF",    "screener": "america", "exchange": "NYSE"},
         # Cripto — key debe coincidir con crypto.py (símbolos cortos)
-        "BTC":     {"symbol": "BTCUSD", "screener": "crypto",  "exchange": "BINANCE"},
-        "ETH":     {"symbol": "ETHUSD", "screener": "crypto",  "exchange": "BINANCE"},
+        "BTC":     {"symbol": "BTCUSD",  "screener": "crypto", "exchange": "BINANCE"},
+        "ETH":     {"symbol": "ETHUSD",  "screener": "crypto", "exchange": "BINANCE"},
+        "SOL":     {"symbol": "SOLUSDT", "screener": "crypto", "exchange": "BINANCE"},
+        "TRB":     {"symbol": "TRBUSDT", "screener": "crypto", "exchange": "BINANCE"},
+        "XRP":     {"symbol": "XRPUSDT", "screener": "crypto", "exchange": "BINANCE"},
+        "BNB":     {"symbol": "BNBUSDT", "screener": "crypto", "exchange": "BINANCE"},
     }
 
     traduccion = {
