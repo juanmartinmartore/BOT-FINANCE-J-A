@@ -1,6 +1,11 @@
 import requests
 import urllib3
 from datetime import datetime, timezone, timedelta
+
+# Suprimimos el warning de SSL *solo* para las llamadas a Ámbito,
+# cuyo certificado SSL tiene problemas conocidos en sus endpoints de mercados.
+# Las demás llamadas del bot usan verify=True (comportamiento por defecto).
+_AMBITO_SSL_WARNING_SUPPRESSED = True
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Zona horaria Argentina (UTC-3)
