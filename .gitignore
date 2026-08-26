@@ -1,0 +1,38 @@
+# Entornos virtuales
+.venv/
+venv/
+env/
+ENV/
+
+# Secretos y variables de entorno
+.env
+.env.*
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+
+# Tests
+.pytest_cache/
+.mypy_cache/
+*.coverage
+.coverage
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*~
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# NOTA: data/ se sube intencionalmente para que Actions guarde el historial.
+# Sus archivos solo contienen URLs publicas, no datos sensibles.
